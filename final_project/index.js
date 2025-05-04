@@ -9,9 +9,20 @@ const app = express();
 app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
-
+const secretKey = '123456789wwwww'; 
 app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+    //Write the authenication mechanism here
+    const token = req.session.jwt;
+    if(token){
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+          res.send('Invalid token');
+        }
+      });
+    } else {
+        res.send({message: "Invalid User"});
+    }
+    next();
 });
  
 const PORT =5000;
